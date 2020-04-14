@@ -43,19 +43,19 @@ def df_peakyness(sums_df, weekdays):
         # find peak in that day
         peak = 0
         hr = 0
-        for i in range(1,len(day)-1):
+        for j in range(1,len(day)-1):
             
             # caluclate volumes for hours
-            hr0 = day['value'][i-1] # volume at previous hour
-            hr1 = day['value'][i] # volume at hour
-            hr2 = day['value'][i+1] # volume at furture hour
+            hr0 = day['value'][j-1] # volume at previous hour
+            hr1 = day['value'][j] # volume at hour
+            hr2 = day['value'][j+1] # volume at furture hour
             
             # potential new peak
             new = hr0 + hr1 + hr2
             
             if new > peak:
                 peak = new
-                hr = i
+                hr = j
             
         peak_volumes.append(peak)
         peak_hours.append(hr)
