@@ -19,6 +19,18 @@ import plotly.express as px
 
 def df_peakyness(sums_df, weekdays):
     
+    '''
+    Creates daily dataframe with peak three hour period identified,
+    total recorded, and peak norm recorded.
+    
+    Parameters
+    ----------
+    sums_df : dataframe, required
+        Daily sums flow for timeseries dataframe
+    weekdays : dataframe, required
+        Time sercies dataframe of flow values
+    '''
+    
     peak_volumes = []
     peak_hours = []
     peak_norm = []
@@ -57,7 +69,13 @@ def df_peakyness(sums_df, weekdays):
 
 def df_iwf(con, site):
     '''
-    Function colects stream incoming city water flow
+    Creates time series index dataframe of flows from SQL query.
+    
+    Parameters
+    ----------
+    con : SQL connection, required
+    site : string, required
+        Site name for query
     '''
     
     sql_query = 'SELECT * FROM '+ site +'_hourly WHERE var = "GPM"'
@@ -77,7 +95,13 @@ def df_iwf(con, site):
     return df
 
 def day_sums(df):
+    '''
+    Sum time series index dataframe by dates
     
+    Parameters
+    ----------
+    df : dataframe, required
+    '''
     # create dates list
     dates = []
     
@@ -93,7 +117,13 @@ def day_sums(df):
     return(sums)
 
 def normalize(df):
+    '''
+    Normalized time series index dataframe by sum of daily values.
     
+    Parameters
+    ----------
+    df : dataframe, required
+    '''
     # create dates list
     dates = []
     
@@ -125,7 +155,14 @@ def normalize(df):
     return(df)
 
 def get_weekdays_df(df):
-        
+    '''
+    Filter time series index dataframe for weekdays
+    
+    Parameters
+    ----------
+    df : dataframe, required
+    '''    
+    
     weekdays_list = []
     weekends_list = []
     holidays_list = []
@@ -148,7 +185,13 @@ def get_weekdays_df(df):
     return weekdays
 
 def get_weekends_df(df):
-        
+    '''
+    Filter time series index dataframe for weekdends
+    
+    Parameters
+    ----------
+    df : dataframe, required
+    '''            
     weekdays_list = []
     weekends_list = []
     holidays_list = []
@@ -171,7 +214,13 @@ def get_weekends_df(df):
     return weekends
 
 def get_holidays_df(df):
-        
+    '''
+    Filter time series index dataframe for holidays
+    
+    Parameters
+    ----------
+    df : dataframe, required
+    '''    
     weekdays_list = []
     weekends_list = []
     holidays_list = []
@@ -196,7 +245,15 @@ def get_holidays_df(df):
 ### GROUPING
 
 def group_days_dict(df):
+    '''
+    Returns dictionary where keys are dates (string), and values are time series index 
+    dataframes sliced from full dataframe for that date only. Used for creating line plot
+    of all weekdays plotted on the same 24 hours. 
     
+    Parameters
+    ----------
+    df : dataframe, required
+    '''    
     days = {}    
     for i in range(0,len(df)):     
         days[str(df.index[i].date())] = df[str(df.index[i].date()):str(df.index[i].date())]
@@ -206,7 +263,14 @@ def group_days_dict(df):
 ### PLOTTING
     
 def day_lines(days, title):
+    '''
+    Creates line plot in plotly of days dictionary.
     
+    Parameters
+    ----------
+    days : dictionary, required
+    title : string, required
+    '''    
     fig = go.Figure()      
     
     for key in days:
@@ -230,7 +294,14 @@ def day_lines(days, title):
 #### PLOTTING
 
 def day_box(df, title):
-
+    '''
+    Creates box plot from time index dataframe.
+    
+    Parameters
+    ----------
+    df : dataframe, required
+    title : string, required
+    '''    
     times = []
     for i in range(0, len(df)):
         times.append(df.index[i].time())

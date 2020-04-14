@@ -165,3 +165,4 @@ df = ejames_df.append(yesler_df).append(stream_df).append(sunset_df)
 fig = px.scatter(df, x='value', y="peak_norm", color = 'site', 
                  hover_data=['dates', 'peak_hours', 'site'])
 fig.write_html("sites_peakyness.html")
+
