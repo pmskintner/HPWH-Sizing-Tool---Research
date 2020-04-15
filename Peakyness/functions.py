@@ -17,6 +17,50 @@ us_holidays = holidays.UnitedStates()
 import plotly.graph_objects as go
 import plotly.express as px
 
+def remove_incomplete_days(df):
+    '''
+    Remove days were not all hours are recorded in the dataset.
+    This function is not very efficient right now and could use some work.
+    
+    Parameters
+    ----------
+    df : dataframe
+    '''
+    
+    # create empty lists to add dataframe columns
+    dates = []
+    timestep = []
+    drop_dates = []
+    
+    for i in range(0, len(df)):        
+        dates.append(df.index[i].date()) # append date datetime object
+        timestep.append(1) # append a 1 to sum later
+             
+    # add df columns
+    df['dates'] = dates # create dates column    
+    df['timestep_sum'] = timestep # create column to sum, will be 24 if all hours are recorded.
+       
+    # sumby date, timstep sum should equal 24 with hourly data     
+    sums=df.groupby(['dates']).sum()
+        
+    # loop to find dates where timestep does not equal 24
+    for i in range(0,len(sums)):
+        if sums['timestep_sum'][i] != 24:
+            drop_dates.append(sums.index[i]) 
+    
+    #reset index, needed in case an hour was recorded more than once.
+    df = df.reset_index()
+    
+    # delete rows where date is in drop_dates
+    for index, row in df.iterrows():
+        if row['dates'] in drop_dates:
+            df.drop(index, inplace=True)
+    
+    # set index back to time stamp
+    df = df.set_index(['time stamp']).sort_index()
+    
+    return df
+
 def df_peakyness(sums_df, weekdays):
     
     '''

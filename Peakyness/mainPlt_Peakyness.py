@@ -22,8 +22,11 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 # custom functions import
-from functions import (get_weekdays_df, day_box, group_days_dict, 
+from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
                        day_lines, normalize, day_sums, df_iwf, df_peakyness)
+
+##### FUNCTION BUILD
+
 
 
 path = "F:\\client\\BPA_E3T\\RCC\\RCCViewer\\"
@@ -37,6 +40,7 @@ con = sqlite3.connect(os.path.join(path, filename))
 
 df = df_iwf(con, 'sunset')  # custom function to query db
 df = df['2015-01-01':'2020-02-01'] # filter for fully occupied days
+df = remove_incomplete_days(df)
 
 weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
@@ -65,12 +69,15 @@ sunset_df['site'] = site
 
 df = df_iwf(con, 'stream')  # custom function to query db
 df = df['2014-01-01':'2020-02-01'] # filter for fully occupied days
+df = remove_incomplete_days(df)
 
 weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
 
+
 # add three hour peak, volumes, times, and normalized volumes to sums_df
 sums_df = df_peakyness(sums_df, weekdays)
+
 
 # convert to gallons
 # must be after peakyness function for proper normalization
@@ -93,6 +100,7 @@ stream_df['site'] = site
 
 df = df_iwf(con, 'yesler')  # custom function to query db
 df = df['2019-07-10':'2020-02-01'] # filter for fully occupied days
+df = remove_incomplete_days(df)
 
 weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
@@ -133,12 +141,12 @@ df['time stamp'] = timestamps
 # set index to time stamp
 df = df.set_index(['time stamp']).sort_index()
 df = df[:'2019-06-01'].append(df['2019-06-19':'2020-02-01']) # remove flood event
-df.to_csv('ejames.csv')
+df = remove_incomplete_days(df)
+
 
 # look at weekdays only
 weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
-sums_df.to_csv('ejames_sums.csv')
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
 sums_df = df_peakyness(sums_df, weekdays)
@@ -146,7 +154,6 @@ sums_df = df_peakyness(sums_df, weekdays)
 # convert to gallons
 # must be after peakyness function for proper normalization
 sums_df['value'] = sums_df['value']*60 
-sums_df.to_csv('ejames_sums60.csv')
 
 # scatterplot of total flows on days
 ejames_df = sums_df.reset_index()
