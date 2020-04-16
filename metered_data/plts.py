@@ -10,8 +10,8 @@ import pandas as pd
 
 # datetime imports
 from datetime import datetime
-import holidays
-us_holidays = holidays.UnitedStates()
+#import holidays
+#us_holidays = holidays.UnitedStates()
 
 # database imports
 import sqlite3
@@ -19,12 +19,12 @@ import os
 
 # plotly
 from plotly import subplots
-import plotly.graph_objects as go
+from plotly import graph_objs as go
 import plotly.express as px
 
 # custom functions import
-from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
-                       day_lines, normalize, day_sums, df_iwf, df_peakyness)
+#from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
+#                       day_lines, normalize, day_sums, df_iwf, df_peakyness)
 
 
 # =============================================================================

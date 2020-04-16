@@ -1,0 +1,42 @@
+Steps for installing conda enviroment
+(1) Create new eviroment from .yml file
+	$ conda env create --file meter_data.yml
+(2) Check enviroment was created
+	$ conda env list
+(3) Activate new enviroment
+	$ conda activate meter_data
+(4) Use anaconda navigator to install spyder
+(5) Launch spyder and run code
+
+Usefule Links
+https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf
+https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#removing-an-environment
+https://stackoverflow.com/questions/30170468/how-to-run-spyder-in-virtual-environment
+https://tdhopper.com/blog/my-python-environment-workflow-with-conda/#fn:conda-env-file
+https://medium.com/@shandou/export-and-create-conda-environment-with-yml-5de619fe5a2
+
+
+Other commands
+# Create new environment named as `envname`
+conda create --name envname
+# Remove environment and its dependencies
+conda remove --name envname --all
+# list all the conda environment available
+conda env list
+# activate enviroment
+conda activate MyNewEnviro
+
+# show full list of packages in enviroment
+conda list --explicit
+# create txt file with list of packages in enviroment
+conda list --explicit > spec-file.txt
+# Use this file to install its listed packages into an existing enviroment
+conda install --name myenv --file spec-file.txt
+# yml file export
+conda env export > environment_droplet.yml
+# create enviroment from yml file on repo
+conda env create -f environment.yml
+# Clone an existing environment
+conda create --name clone_envname --clone envname
+# Remove Enviroment
+conda env remove -n ENV_NAME

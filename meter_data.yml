@@ -1,0 +1,10 @@
+name: meter_data
+dependencies:
+  - pandas=1.0.3
+  - sqlite=3.31.1
+  - python=3.7.3
+  - pip
+  - pip:
+    - plotly==4.0.0
+    - holidays==0.10.1
+    - plotly_express==0.4.0

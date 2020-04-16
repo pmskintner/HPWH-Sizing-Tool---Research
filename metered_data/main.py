@@ -18,8 +18,8 @@ import sqlite3
 import os
 
 # plotly
-#import plotly.graph_objects as go
-#import plotly.express as px
+import plotly.graph_objects as go
+import plotly.express as px
 
 # custom functions import
 from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
