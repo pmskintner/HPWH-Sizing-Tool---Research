@@ -8,23 +8,10 @@ Created on Wed Apr 15 08:49:07 2020
 # dataframe imports
 import pandas as pd
 
-# datetime imports
-from datetime import datetime
-#import holidays
-#us_holidays = holidays.UnitedStates()
-
-# database imports
-import sqlite3
-import os
-
 # plotly
 from plotly import subplots
 from plotly import graph_objs as go
 import plotly.express as px
-
-# custom functions import
-#from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
-#                       day_lines, normalize, day_sums, df_iwf, df_peakyness)
 
 
 # =============================================================================
@@ -47,19 +34,19 @@ block11_peakyness = pd.read_csv('block11_peakyness.csv')
 # #### Scatter Plots
 # =============================================================================
 
-fig = px.scatter(ejames_volume, x='dates', y="value", hover_data=['dates'])
+fig = px.scatter(ejames_peakyness, x='dates', y="value", hover_data=['dates'])
 fig.write_html("ejames_scatter.html")
 
-fig = px.scatter(yesler_volume, x='dates', y="value", hover_data=['dates'])
+fig = px.scatter(yesler_peakyness, x='dates', y="value", hover_data=['dates'])
 fig.write_html("yesler_scatter.html")
 
-fig = px.scatter(stream_volume, x='dates', y="value", hover_data=['dates'])
+fig = px.scatter(stream_peakyness, x='dates', y="value", hover_data=['dates'])
 fig.write_html("stream_scatter.html")
 
-fig = px.scatter(sunset_volume, x='dates', y="value", hover_data=['dates'])
+fig = px.scatter(sunset_peakyness, x='dates', y="value", hover_data=['dates'])
 fig.write_html("sunset_scatter.html")
 
-fig = px.scatter(block11_volume, x='dates', y="value", hover_data=['dates'])
+fig = px.scatter(block11_peakyness, x='dates', y="value", hover_data=['dates'])
 fig.write_html("block11_scatter.html")
 
 # =============================================================================
@@ -206,8 +193,3 @@ fig.append_trace(trace2, row=1,col=2)
 
 fig.update_layout(title_text="block11 peakyness distributions")
 fig.write_html("block11_peakyness_distribution.html")
-
-
-
-
-

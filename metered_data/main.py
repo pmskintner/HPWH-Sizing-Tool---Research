@@ -17,10 +17,6 @@ us_holidays = holidays.UnitedStates()
 import sqlite3
 import os
 
-# plotly
-import plotly.graph_objects as go
-import plotly.express as px
-
 # custom functions import
 from functions import (get_weekdays_df, remove_incomplete_days, day_box, group_days_dict, 
                        day_lines, normalize, day_sums, df_iwf, df_peakyness)
@@ -225,19 +221,3 @@ yesler_peakyness.to_csv('yesler_peakyness.csv')
 stream_peakyness.to_csv('stream_peakyness.csv')
 sunset_peakyness.to_csv('sunset_peakyness.csv')
 block11_peakyness.to_csv('block11_peakyness.csv')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

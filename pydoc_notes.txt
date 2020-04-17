@@ -1,0 +1,2 @@
+(1) open anaconda prompt and go to directory
+(2) run "pydoc -w functions" to create an html file for functions
