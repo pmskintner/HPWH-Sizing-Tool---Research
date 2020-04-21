@@ -102,7 +102,29 @@ fig.write_html("sites_peakyness.html")
 df = ejames_peakyness.append(yesler_peakyness).append(stream_peakyness).append(sunset_peakyness)
 fig = px.scatter(df, x='value', y="peak_norm", color = 'site', 
                  hover_data=['dates', 'peak_hours', 'site'])
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.305,.305],  mode='lines', name = 'ASHRAE Low',
+                 line = dict(dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.225, .225],  mode='lines', name = 'ASHRAE Medium',
+                 line = dict(dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.6, 600./6000.],  mode='lines', name = '600 gal peak',
+                 line = dict(color = 'lightgray', dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.5, 500./6000.],  mode='lines', name = '500 gal peak',
+                 line = dict(color = 'lightgray', dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.4, 400./6000.],  mode='lines', name = '400 gal peak',
+                 line = dict(color = 'lightgray',dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.3, 300./6000.],  mode='lines', name = '300 gal peak',
+                 line = dict(color = 'lightgray',dash='dash')))
+fig.add_trace(go.Scatter(x=[1000,6000], y = [.2, 200./6000.],  mode='lines', name = '200 gal peak',
+                 line = dict(color = 'lightgray',dash='dash')))
 fig.write_html("sites_peakyness_noBlock11.html")
+
+# combo non normalizied peakyness scatterplots
+df = ejames_peakyness.append(yesler_peakyness).append(stream_peakyness).append(sunset_peakyness)
+fig = px.scatter(df, x='value', y="peak_volumes", color = 'site', 
+                 hover_data=['dates', 'peak_hours', 'site','peak_norm'])
+fig.add_trace(go.Scatter(x=[1000,6000], y = [305, .305*6000.],  mode='lines', name = '0.3 peak norm',
+                 line = dict(color = 'gray', dash='dash')))
+fig.write_html("sites_peakyness_actual_noBlock11.html")
 
 
 # =============================================================================
@@ -132,7 +154,7 @@ fig = subplots.make_subplots(rows=1,
                   start_cell="bottom-left",
                   subplot_titles=('Total Volume [gals]', 'Peak Norm'))
 
-x = sunset_peakyness['value']
+x = sunset_peakyness['value'],
 trace1 = go.Histogram(x=x, cumulative_enabled=True, histnorm='probability density')
 x = sunset_peakyness['peak_norm']
 trace2 = go.Histogram(x=x, cumulative_enabled=True, histnorm='probability density')

@@ -86,7 +86,8 @@ stream_peakyness['site'] = site
 # =============================================================================
 
 df = df_iwf(con, 'yesler')  # custom function to query db
-df = df['2019-07-10':'2020-02-01'] # filter for fully occupied days
+#df = df['2019-07-10':'2020-02-01'] # filter for fully occupied days
+df = df['2018-11-01':'2020-02-01'] # filter for fully occupied days
 df = remove_incomplete_days(df)
 yesler_flows = df.reset_index()
 
@@ -179,7 +180,7 @@ sums_df = df_peakyness(sums_df, weekdays)
 
 # convert to gallons
 # must be after peakyness function for proper normalization
-sums_df['value'] = sums_df['value']*60 
+sums_df['value'] = sums_df['value']*60 * 125/120
 
 ejames_peakyness = sums_df.reset_index()
 site = []
