@@ -27,6 +27,8 @@ filename = "RCC_MV.db"
 # make connection
 con = sqlite3.connect(os.path.join(path, filename))
 
+sumhours = 18 # Hours used to sum for the peaks.
+
 # =============================================================================
 # #### Peakyness Plot For Sunset ###
 # =============================================================================
@@ -40,7 +42,7 @@ weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
-sums_df = df_peakyness(sums_df, weekdays)
+sums_df = df_peakyness(sums_df, weekdays, sumhours)
 
 # convert to gallons
 # must be after peakyness function for proper normalization
@@ -67,7 +69,7 @@ sums_df = day_sums(weekdays) # sum on date
 
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
-sums_df = df_peakyness(sums_df, weekdays)
+sums_df = df_peakyness(sums_df, weekdays, sumhours)
 
 
 # convert to gallons
@@ -95,7 +97,7 @@ weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
-sums_df = df_peakyness(sums_df, weekdays)
+sums_df = df_peakyness(sums_df, weekdays, sumhours)
 
 # convert to gallons
 # must be after peakyness function for proper normalization
@@ -137,7 +139,7 @@ weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
-sums_df = df_peakyness(sums_df, weekdays)
+sums_df = df_peakyness(sums_df, weekdays, sumhours)
 
 # convert to gallons
 # must be after peakyness function for proper normalization
@@ -176,7 +178,7 @@ weekdays = get_weekdays_df(df) # filter for weekdays
 sums_df = day_sums(weekdays) # sum on date
 
 # add three hour peak, volumes, times, and normalized volumes to sums_df
-sums_df = df_peakyness(sums_df, weekdays)
+sums_df = df_peakyness(sums_df, weekdays, sumhours)
 
 # convert to gallons
 # must be after peakyness function for proper normalization
@@ -217,8 +219,8 @@ stream_volume.to_csv('stream_volume.csv')
 sunset_volume.to_csv('sunset_volume.csv')
 block11_volume.to_csv('block11_volume.csv')
 
-ejames_peakyness.to_csv('ejames_peakyness.csv')
-yesler_peakyness.to_csv('yesler_peakyness.csv')
-stream_peakyness.to_csv('stream_peakyness.csv')
-sunset_peakyness.to_csv('sunset_peakyness.csv')
-block11_peakyness.to_csv('block11_peakyness.csv')
+ejames_peakyness.to_csv('ejames_' + str(sumhours) +'hr_peakyness.csv')
+yesler_peakyness.to_csv('yesler_' + str(sumhours) +'hr_peakyness.csv')
+stream_peakyness.to_csv('stream_' + str(sumhours) +'hr_peakyness.csv')
+sunset_peakyness.to_csv('sunset_' + str(sumhours) +'hr_peakyness.csv')
+block11_peakyness.to_csv('block11_' + str(sumhours) +'hr_peakyness.csv')

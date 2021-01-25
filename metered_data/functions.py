@@ -17,6 +17,11 @@ us_holidays = holidays.UnitedStates()
 import plotly.graph_objects as go
 import plotly.express as px
 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
+import matplotlib.transforms as transforms
+    
 def remove_incomplete_days(df):
     '''
     Remove days were not all hours are recorded in the dataset.
@@ -61,7 +66,7 @@ def remove_incomplete_days(df):
     
     return df
 
-def df_peakyness(sums_df, weekdays):
+def df_peakyness(sums_df, weekdays, sumhrs = 3):
     
     '''
     Creates daily dataframe with peak three hour period identified,
@@ -73,6 +78,8 @@ def df_peakyness(sums_df, weekdays):
         Daily sums flow for timeseries dataframe
     weekdays : dataframe, required
         Time sercies dataframe of flow values
+    sumhrs : int
+        How many hours to sum over
     '''
     
     peak_volumes = []
@@ -87,20 +94,69 @@ def df_peakyness(sums_df, weekdays):
         # find peak in that day
         peak = 0
         hr = 0
-        for j in range(1,len(day)-1):
+        #iterEnd = len(day)-1;
+        if sumhrs <= 12 : 
+            for j in range(1, len(day)-1 if sumhrs==3 else len(day)-2):
+                if sumhrs ==3:
+                    # caluclate volumes for hours
+                    hr0 = day['value'][j-1] # volume at previous hour
+                    hr1 = day['value'][j] # volume at hour
+                    hr2 = day['value'][j+1] # volume at furture hour
+                    
+                    # potential new peak
+                    new = hr0 + hr1 + hr2
+                elif sumhrs == 4:
+                     # caluclate volumes for hours
+                    hr0 = day['value'][j-1] # volume at previous hour
+                    hr1 = day['value'][j] # volume at hour
+                    hr2 = day['value'][j+1] # volume at furture hour
+                    hr3 = day['value'][j+2] # volume at furture hour
+    
+                    # potential new peak
+                    new = hr0 + hr1 + hr2 + hr3
+                elif sumhrs == 5:
+                     # caluclate volumes for hours
+                    hr_1 = day['value'][j-2] # volume at previous hour
+                    hr0 = day['value'][j-1] # volume at previous hour
+                    hr1 = day['value'][j] # volume at hour
+                    hr2 = day['value'][j+1] # volume at furture hour
+                    hr3 = day['value'][j+2] # volume at furture hour
+    
+                    # potential new peak
+                    new = hr_1 + hr0 + hr1 + hr2 + hr3   
+                else: 
+                    raise Exception("sumhrs value: "+str(sumhrs)+ " is unsupported.")
+                    
+                if new > peak:
+                    peak = new
+                    hr = j
+        else:
+            diffN = 1./18. - (day['value']/sum(day['value']))
+            diffInd = np.where(np.diff(np.sign(diffN))<0)[0]+1;
+            peak = 0;
+            for peakInd in diffInd:
+                diffCum = np.cumsum(diffN[peakInd:]); #Get the rest of the day from the start of the peak
+                negCum = diffCum[diffCum<-0.00001]
+                if len(negCum) != 0:
+                    new = -min(negCum); #Minimum value less than 0 or 0.
+                    if new > peak:
+                        peak = new
+                        hr = peakInd
+                        
+            peak = peak * sum(day['value']);
             
-            # caluclate volumes for hours
-            hr0 = day['value'][j-1] # volume at previous hour
-            hr1 = day['value'][j] # volume at hour
-            hr2 = day['value'][j+1] # volume at furture hour
+            # Set hr to be the number of hours for the peak not WHEN the peak
+            sign_changes = np.where(np.diff(np.sign(diffN)))[0]
+            peak_switch = np.where(sign_changes == (hr-1))[0]; # Hour the peak starts
             
-            # potential new peak
-            new = hr0 + hr1 + hr2
-            
-            if new > peak:
-                peak = new
-                hr = j
-            
+            try: 
+                hr = sign_changes[peak_switch[0]+1] - sign_changes[peak_switch[0]]
+            except IndexError:
+                print("Hit index error diffN is: ")
+                print( 1./18. - (day['value']/sum(day['value'])) )
+                peak = 0;
+                hr = 0;
+        
         peak_volumes.append(peak)
         peak_hours.append(hr)
         peak_norm.append(peak/sums_df['value'][i])    
@@ -355,3 +411,147 @@ def day_box(df, title):
     
     fig = px.box(df, x="times", y="value")
     fig.write_html(title+".html")
+
+    
+def confidence_ellipse(x, y, ax, n_std=3.0, facecolor='none', **kwargs):
+    """
+    Create a plot of the covariance confidence ellipse of *x* and *y*.
+
+    Parameters
+    ----------
+    x, y : array-like, shape (n, )
+        Input data.
+
+    ax : matplotlib.axes.Axes
+        The axes object to draw the ellipse into.
+
+    n_std : float
+        The number of standard deviations to determine the ellipse's radiuses.
+
+    **kwargs
+        Forwarded to `~matplotlib.patches.Ellipse`
+
+    Returns
+    -------
+    matplotlib.patches.Ellipse
+    """
+    if x.size != y.size:
+        raise ValueError("x and y must be the same size")
+
+    cov = np.cov(x, y)
+    pearson = cov[0, 1]/np.sqrt(cov[0, 0] * cov[1, 1])
+    # Using a special case to obtain the eigenvalues of this
+    # two-dimensionl dataset.
+    ell_radius_x = np.sqrt(1 + pearson)
+    ell_radius_y = np.sqrt(1 - pearson)
+    ellipse = Ellipse((0, 0), width=ell_radius_x * 2, height=ell_radius_y * 2,
+                      facecolor=facecolor, **kwargs)
+
+    # Calculating the stdandard deviation of x from
+    # the squareroot of the variance and multiplying
+    # with the given number of standard deviations.
+    scale_x = np.sqrt(cov[0, 0]) * n_std
+    mean_x = np.mean(x)
+
+    # calculating the stdandard deviation of y ...
+    scale_y = np.sqrt(cov[1, 1]) * n_std
+    mean_y = np.mean(y)
+
+    transf = transforms.Affine2D() \
+        .rotate_deg(45) \
+        .scale(scale_x, scale_y) \
+        .translate(mean_x, mean_y)
+
+    ellipse.set_transform(transf + ax.transData)
+    return ax.add_patch(ellipse);
+
+
+def plotBinormal(df, title):
+    """
+    Create a plot of the covariance confidence ellipse of value and peak norm.
+
+    Parameters
+    ----------
+    df : dataframe, shape (n, )
+        Input data.
+
+    title : str
+        The title of the plot
+
+    """
+    fig, ax_nstd = plt.subplots();
+    ax_nstd.scatter(df['value'], df['peak_norm'],s=2.5)
+    confidence_ellipse(df['value'], df['peak_norm'], ax_nstd, n_std=2,
+                   label=r'$2\sigma$', edgecolor='fuchsia', linestyle='--')
+    confidence_ellipse(df['value'], df['peak_norm'], ax_nstd, n_std=3,
+                   label=r'$3\sigma$', edgecolor='blue', linestyle=':')
+    ax_nstd.legend()
+    ax_nstd.set_title(title)
+    plt.show()
+    
+def plotScatMargHisto(df, title, x = 'value', y = 'peak_norm'):
+    """
+    Create a scatter plot with marginal histograms normalized.
+
+    Parameters
+    ----------
+    df : dataframe, shape (n, )
+        Input data.
+
+    title : str
+        The title of the plot
+
+    """   
+    colors = ['#636EFA', '#EF553B', '#00CC96', '#AB63FA','#FFA15A','#19d3f3','#FF6692']
+
+
+    fig = px.scatter(df, x=x, y=y, color = 'site', 
+                     hover_data=['dates','peak_hours', 'site'],
+                     color_discrete_sequence=colors)    
+    ii = 0;
+    for ss in df.site.unique():
+        fig.add_trace(go.Histogram(
+                y = df[y][df.site == ss], 
+                name = ss, 
+                xaxis = 'x2',
+                histnorm='probability',
+                marker_color = colors[ii]
+            ))
+            
+        fig.add_trace(go.Histogram(
+            x = df[x][df.site == ss], 
+            name = ss, 
+            yaxis = 'y2',
+            histnorm='probability',
+            marker_color = colors[ii]
+            ))
+        ii = ii+1;
+        
+    fig.update_layout(barmode='overlay')
+    fig.update_traces(opacity=0.6)
+    
+    fig.update_layout(
+        xaxis = dict(
+            zeroline = False,
+            domain = [0,0.85],
+            showgrid = False
+        ),
+        yaxis = dict(
+            zeroline = False,
+            domain = [0,0.85],
+            showgrid = False
+        ),
+        xaxis2 = dict(
+            zeroline = False,
+            domain = [0.85,1],
+            showgrid = False
+        ),
+        yaxis2 = dict(
+            zeroline = False,
+            domain = [0.85,1],
+            showgrid = False
+        ),
+        bargap = 0,
+        hovermode = 'closest'
+    )
+    return fig

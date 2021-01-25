@@ -5,6 +5,7 @@ dependencies:
   - python=3.7.3
   - pip
   - pip:
+    - matplotlib
     - plotly==4.0.0
     - holidays==0.10.1
     - plotly_express==0.4.0
