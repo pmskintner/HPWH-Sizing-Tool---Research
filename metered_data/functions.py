@@ -179,7 +179,7 @@ def df_iwf(con, site):
         Site name for query
     '''
     
-    sql_query = 'SELECT * FROM '+ site +'_hourly WHERE var = "GPM"'
+    sql_query = 'SELECT * FROM '+ site +'_hourly WHERE var in ("GPM", "WaterCold")'
     df = pd.read_sql_query(sql_query, con)
     
     ### SORT DATAFRAME SO TIMESTAMP IS INDEX
